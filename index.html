@@ -103,47 +103,6 @@
             background-color: #0056b3;
             transform: scale(1.05);
         }
-
-        #user-input {
-            background-color: #f0f0f0;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            margin: 20px auto;
-        }
-
-        #user-input input {
-            padding: 10px;
-            margin: 10px;
-            border: 2px solid #007bff;
-            border-radius: 8px;
-            width: calc(100% - 24px);
-            font-size: 1em;
-        }
-
-        #user-input button {
-            margin-top: 10px;
-            padding: 12px 20px;
-            font-size: 1.1em;
-            cursor: pointer;
-            border: none;
-            background-color: #007bff;
-            color: #ffffff;
-            border-radius: 10px;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        #user-input button:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-
-        #user-chart-container {
-            margin-top: 20px;
-            max-width: 600px;
-            margin: 20px auto;
-        }
     </style>
 </head>
 <body>
@@ -180,60 +139,65 @@
             </div>
         </div>
 
-        <div id="nominal-ordinal" class="page" style="display: none;">
-            <h1>Data Land Adventure - Nominal and Ordinal Data</h1>
-            <div id="vera-veri">
-                <img src="vera-veri.png" alt="Vera Data" style="max-width: 100px; border-radius: 50%;">
-                <p>Hello, I’m Vera Data! Today, we’ll go on an exciting journey to explore data types! Drag and drop items into the correct categories.</p>
-            </div>
-
-            <div id="items">
-                <div class="item" draggable="true" data-type="nominal" id="item-11">Color</div>
-                <div class="item" draggable="true" data-type="nominal" id="item-12">Brand</div>
-                <div class="item" draggable="true" data-type="nominal" id="item-13">Gender</div>
-                <div class="item" draggable="true" data-type="nominal" id="item-14">Music Genre</div>
-                <div class="item" draggable="true" data-type="nominal" id="item-15">Animal Type</div>
-                <div class="item" draggable="true" data-type="ordinal" id="item-16">Grade</div>
-                <div class="item" draggable="true" data-type="ordinal" id="item-17">Class Level</div>
-                <div class="item" draggable="true" data-type="ordinal" id="item-18">Spice Level</div>
-                <div class="item" draggable="true" data-type="ordinal" id="item-19">Customer Satisfaction</div>
-                <div class="item" draggable="true" data-type="ordinal" id="item-20">Rank</div>
-            </div>
-
-            <div id="categories">
-                <div class="category" id="nominal">Nominal Data</div>
-                <div class="category" id="ordinal">Ordinal Data</div>
-            </div>
-        </div>
-
-        <div id="continuous-discrete" class="page" style="display: none;">
-            <h1>Data Land Adventure - Continuous and Discrete Data</h1>
-            <div id="vera-veri">
-                <img src="vera-veri.png" alt="Vera Data" style="max-width: 100px; border-radius: 50%;">
-                <p>Hello, I’m Vera Data! Today, we’ll go on an exciting journey to explore data types! Drag and drop items into the correct categories.</p>
-            </div>
-
-            <div id="items">
-                <div class="item" draggable="true" data-type="continuous" id="item-21">Liquid Quantity</div>
-                <div class="item" draggable="true" data-type="continuous" id="item-22">Height</div>
-                <div class="item" draggable="true" data-type="continuous" id="item-23">Weight</div>
-                <div class="item" draggable="true" data-type="continuous" id="item-24">Temperature</div>
-                <div class="item" draggable="true" data-type="continuous" id="item-25">Distance</div>
-                <div class="item" draggable="true" data-type="discrete" id="item-26">Number of Cars</div>
-                <div class="item" draggable="true" data-type="discrete" id="item-27">Number of Siblings</div>
-                <div class="item" draggable="true" data-type="discrete" id="item-28">Number of Students</div>
-                <div class="item" draggable="true" data-type="discrete" id="item-29">Number of Books</div>
-                <div class="item" draggable="true" data-type="discrete" id="item-30">Number of Toys</div>
-            </div>
-
-            <div id="categories">
-                <div class="category" id="continuous">Continuous Data</div>
-                <div class="category" id="discrete">Discrete Data</div>
-            </div>
-        </div>
-
         <div id="feedback"></div>
     </div>
+
+    <script>
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'block';
+            resetFeedback();
+        }
+
+        function resetFeedback() {
+            const feedback = document.getElementById('feedback');
+            feedback.innerHTML = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const items = document.querySelectorAll('.item');
+            const categories = document.querySelectorAll('.category');
+            const feedback = document.getElementById('feedback');
+
+            items.forEach(item => {
+                item.addEventListener('dragstart', dragStart);
+            });
+
+            categories.forEach(category => {
+                category.addEventListener('dragover', dragOver);
+                category.addEventListener('drop', drop);
+            });
+
+            function dragStart(e) {
+                e.dataTransfer.setData('text', e.target.id);
+            }
+
+            function dragOver(e) {
+                e.preventDefault();
+            }
+
+            function drop(e) {
+                e.preventDefault();
+                const itemId = e.dataTransfer.getData('text');
+                const draggedItem = document.getElementById(itemId);
+                const correctCategory = draggedItem.getAttribute('data-type');
+                const dropCategory = e.target.id;
+
+                if (correctCategory === dropCategory) {
+                    e.target.appendChild(draggedItem);
+                    feedback.innerHTML = `<p>${draggedItem.textContent} is placed in the correct category! 🎉</p>`;
+                    feedback.style.color = '#4caf50';
+                } else {
+                    feedback.innerHTML = `<p>${draggedItem.textContent} is placed in the wrong category. Try again! 😕</p>`;
+                    feedback.style.color = 'red';
+                }
+            }
+        });
+    </script>
 </body>
 </html>
+
 
